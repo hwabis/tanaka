@@ -14,6 +14,9 @@ class IVideoFrameSource {
 
   virtual auto captureFrame() -> VideoFrame = 0;
   virtual auto hasMoreFrames() -> bool = 0;
+
+ protected:
+  IVideoFrameSource() = default;
 };
 
 }  // namespace tanaka
