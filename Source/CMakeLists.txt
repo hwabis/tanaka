@@ -1,8 +1,12 @@
 include(${CMAKE_SOURCE_DIR}/Cmake/SetTargetDefaults.cmake)
 
-add_library(tanaka
-  lolol.cc
-)
+set(TANAKA_SOURCES)
+
+if(WIN32)
+    list(APPEND TANAKA_SOURCES VideoSources/WgcVideoSource.cc)
+endif()
+
+add_library(tanaka ${TANAKA_SOURCES})
 
 set_target_defaults(tanaka)
 

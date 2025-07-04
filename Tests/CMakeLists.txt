@@ -1,5 +1,5 @@
 include(${CMAKE_SOURCE_DIR}/Cmake/AddTestExecutable.cmake)
 
-add_test_executable(testlolol tanaka
-  testlolol.cc
+add_test_executable(tanaka-tests tanaka
+  VideoSources/TestWgcVideoSource.cc
 )
