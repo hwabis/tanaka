@@ -12,8 +12,8 @@ class IVideoFrameSource {
   IVideoFrameSource(IVideoFrameSource&&) = delete;
   auto operator=(IVideoFrameSource&&) -> IVideoFrameSource& = delete;
 
-  virtual auto captureFrame() -> VideoFrame = 0;
-  virtual auto hasMoreFrames() -> bool = 0;
+  virtual auto CaptureFrame() -> VideoFrame = 0;
+  virtual auto HasMoreFrames() -> bool = 0;
 
  protected:
   IVideoFrameSource() = default;
