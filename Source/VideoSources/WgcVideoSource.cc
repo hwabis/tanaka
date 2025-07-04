@@ -33,23 +33,15 @@ WgcVideoSource::WgcVideoSource() {
 }
 
 auto WgcVideoSource::CaptureFrame() -> VideoFrame {
-  VideoFrame frame;
-
   auto captureFrame = framePool_.TryGetNextFrame();
   if (!captureFrame) {
-    frame.Width = 1920;
-    frame.Height = 1080;
-    frame.Pixels.resize(1920 * 1080 * 4);
-    return frame;
+    return {1920, 1080};
   }
 
   auto size = captureFrame.ContentSize();
-  frame.Width = size.Width;
-  frame.Height = size.Height;
-  frame.Pixels.resize(size.Width * size.Height * 4);
   // todo
 
-  return frame;
+  return {static_cast<size_t>(size.Width), static_cast<size_t>(size.Height)};
 }
 
 auto WgcVideoSource::HasMoreFrames() -> bool {
