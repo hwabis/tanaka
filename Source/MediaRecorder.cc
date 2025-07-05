@@ -10,6 +10,8 @@ auto MediaRecorder::StartRecording() -> bool {
     return false;
   }
 
+  // todo streaming and stuff isn't possible like this since we have to wait for
+  // stop token or source to run out of frames before any output happens LOL
   recordingThread_ = std::jthread([this](const std::stop_token& token) {
     while (!token.stop_requested() && videoPipeline_.Source().HasMoreFrames()) {
       constexpr int sleepDuration = 33;
@@ -29,7 +31,7 @@ auto MediaRecorder::StartRecording() -> bool {
     }
 
     // todo finalize mux
-    // todo write to ioutput
+    // videoPipeline_.Output().Write(muxer_->GetData());
   });
 
   return true;
