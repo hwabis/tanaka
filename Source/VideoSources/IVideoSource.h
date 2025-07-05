@@ -13,8 +13,9 @@ class IVideoSource {
   IVideoSource(IVideoSource&&) = delete;
   auto operator=(IVideoSource&&) -> IVideoSource& = delete;
 
-  virtual auto CaptureFrame() -> std::optional<VideoFrame> = 0;
-  virtual auto HasMoreFrames() -> bool = 0;
+  [[nodiscard]] virtual auto CaptureFrame() const
+      -> std::optional<VideoFrame> = 0;
+  [[nodiscard]] virtual auto HasMoreFrames() const -> bool = 0;
 
  protected:
   IVideoSource() = default;

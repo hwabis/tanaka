@@ -17,16 +17,19 @@ auto MediaRecorder::StartRecording() -> bool {
 
       if (auto videoFrame = videoPipeline_.Source().CaptureFrame()) {
         for (const auto& processor : videoPipeline_.Processors()) {
-          videoFrame = processor->ProcessFrame(std::move(*videoFrame));
+          videoFrame = processor->Process(std::move(*videoFrame));
         }
-        // todo encode
+        if (auto encoded =
+                videoPipeline_.Encoder().Encode(std::move(*videoFrame))) {
+          // todo muxer_->AddVideoFrame(*encoded);
+        }
       }
 
       // todo audioFrame
-      // todo mux, support output interfaces
     }
 
-    // todo finalize encoder, output once more?
+    // todo finalize mux
+    // todo write to ioutput
   });
 
   return true;

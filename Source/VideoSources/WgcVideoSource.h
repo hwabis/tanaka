@@ -10,6 +10,7 @@
 #include <winrt/base.h>
 #include <winrt/windows.graphics.capture.h>
 #include <winrt/windows.graphics.directx.direct3d11.h>
+#include <chrono>
 #include <optional>
 #include "IVideoSource.h"
 #include "Models/VideoFrame.h"
@@ -19,12 +20,16 @@ namespace tanaka {
 class WgcVideoSource : public IVideoSource {
  public:
   WgcVideoSource();
-  auto CaptureFrame() -> std::optional<VideoFrame> override;
-  auto HasMoreFrames() -> bool override;
+
+  [[nodiscard]] auto CaptureFrame() const -> std::optional<VideoFrame> override;
+  [[nodiscard]] auto HasMoreFrames() const -> bool override;
 
  private:
   static auto createDirect3DDevice(ID3D11Device* d3dDevice)
       -> winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice;
+  auto getCurrentTimestampUs() const -> int64_t;
+
+  std::chrono::steady_clock::time_point captureStartTime_;
 
   winrt::com_ptr<ID3D11Device> d3dDevice_ = nullptr;
   winrt::com_ptr<ID3D11DeviceContext> d3dContext_ = nullptr;

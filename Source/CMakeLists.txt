@@ -1,6 +1,7 @@
 include(${CMAKE_SOURCE_DIR}/Cmake/SetTargetDefaults.cmake)
 
 add_library(tanaka
+  VideoEncoders/DoNothingVideoEncoder.cc
   VideoProcessors/DoNothingVideoProcessor.cc
   VideoSources/WgcVideoSource.cc
   MediaRecorder.cc

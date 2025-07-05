@@ -2,7 +2,7 @@
 
 namespace tanaka {
 
-auto DoNothingVideoProcessor::ProcessFrame(VideoFrame&& frame) -> VideoFrame {
+auto DoNothingVideoProcessor::Process(VideoFrame&& frame) -> VideoFrame {
   return std::move(frame);
 }
 

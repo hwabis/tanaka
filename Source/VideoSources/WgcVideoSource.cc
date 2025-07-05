@@ -45,9 +45,11 @@ WgcVideoSource::WgcVideoSource() {
 
   session_ = framePool_.CreateCaptureSession(captureItem_);
   session_.StartCapture();
+
+  captureStartTime_ = std::chrono::steady_clock::now();
 }
 
-auto WgcVideoSource::CaptureFrame() -> std::optional<VideoFrame> {
+auto WgcVideoSource::CaptureFrame() const -> std::optional<VideoFrame> {
   winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frameToProcess =
       framePool_.TryGetNextFrame();
   if (!frameToProcess) {
@@ -56,7 +58,7 @@ auto WgcVideoSource::CaptureFrame() -> std::optional<VideoFrame> {
 
   auto size = frameToProcess.ContentSize();
   VideoFrame frame{static_cast<size_t>(size.Width),
-                   static_cast<size_t>(size.Height)};
+                   static_cast<size_t>(size.Height), getCurrentTimestampUs()};
 
   auto surface = frameToProcess.Surface()
                      .as<winrt::Windows::Graphics::DirectX::Direct3D11::
@@ -81,7 +83,7 @@ auto WgcVideoSource::CaptureFrame() -> std::optional<VideoFrame> {
   return frame;
 }
 
-auto WgcVideoSource::HasMoreFrames() -> bool {
+auto WgcVideoSource::HasMoreFrames() const -> bool {
   return true;
 }
 
@@ -96,6 +98,12 @@ auto WgcVideoSource::createDirect3DDevice(ID3D11Device* d3dDevice)
   return inspectable
       .as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>();
 }
+
+auto WgcVideoSource::getCurrentTimestampUs() const -> int64_t {
+  auto now = std::chrono::steady_clock::now();
+  auto elapsed = now - captureStartTime_;
+  return std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+};
 
 }  // namespace tanaka
 

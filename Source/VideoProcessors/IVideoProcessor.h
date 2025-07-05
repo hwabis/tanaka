@@ -12,7 +12,7 @@ class IVideoProcessor {
   IVideoProcessor(IVideoProcessor&&) = default;
   auto operator=(IVideoProcessor&&) -> IVideoProcessor& = default;
 
-  virtual auto ProcessFrame(VideoFrame&& frame) -> VideoFrame = 0;
+  virtual auto Process(VideoFrame&& frame) -> VideoFrame = 0;
 
  protected:
   IVideoProcessor() = default;

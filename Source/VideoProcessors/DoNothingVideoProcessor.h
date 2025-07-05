@@ -6,7 +6,7 @@ namespace tanaka {
 
 class DoNothingVideoProcessor : public IVideoProcessor {
  public:
-  auto ProcessFrame(VideoFrame&& frame) -> VideoFrame override;
+  auto Process(VideoFrame&& frame) -> VideoFrame override;
 };
 
 }  // namespace tanaka
