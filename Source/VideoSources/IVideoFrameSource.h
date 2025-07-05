@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include "VideoFrame.h"
 
 namespace tanaka {
@@ -12,7 +13,7 @@ class IVideoFrameSource {
   IVideoFrameSource(IVideoFrameSource&&) = delete;
   auto operator=(IVideoFrameSource&&) -> IVideoFrameSource& = delete;
 
-  virtual auto CaptureFrame() -> VideoFrame = 0;
+  virtual auto CaptureFrame() -> std::optional<VideoFrame> = 0;
   virtual auto HasMoreFrames() -> bool = 0;
 
  protected:

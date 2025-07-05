@@ -1,11 +1,28 @@
-#include <gtest/gtest.h>
-
 #include <VideoSources/WgcVideoSource.h>
+#include <gtest/gtest.h>
+#include <chrono>
+#include <optional>
+#include <thread>
 
 TEST(WgcVideoSource, CanCaptureFrame) {
   tanaka::WgcVideoSource source;
-  auto frame = source.CaptureFrame();
 
-  std::cout << "Captured frame: " << frame.Width() << "x" << frame.Height()
-            << ", first pixel: " << static_cast<int>(frame.Pixels()[0]) << "\n";
+  // Give WGC time to start capturing, then try to get a frame
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  auto frameOpt = source.CaptureFrame();
+  ASSERT_TRUE(frameOpt.has_value());
+  auto& frame = frameOpt.value();
+  auto pixels = frame.Pixels();
+  bool hasData = false;
+  for (auto& pixel : pixels) {
+    if (pixel != std::byte{0}) {
+      hasData = true;
+      break;
+    }
+  }
+
+  EXPECT_GT(frame.Width(), 0);
+  EXPECT_GT(frame.Height(), 0);
+  EXPECT_TRUE(hasData) << "Frame should contain actual pixel data";
 }

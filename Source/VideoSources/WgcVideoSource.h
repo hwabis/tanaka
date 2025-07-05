@@ -2,9 +2,6 @@
 
 #pragma once
 
-#include "IVideoFrameSource.h"
-#include "VideoFrame.h"
-
 #include <d3d11.h>
 #include <dxgi1_2.h>
 #include <windows.graphics.capture.interop.h>
@@ -13,13 +10,16 @@
 #include <winrt/base.h>
 #include <winrt/windows.graphics.capture.h>
 #include <winrt/windows.graphics.directx.direct3d11.h>
+#include <mutex>
+#include "IVideoFrameSource.h"
+#include "VideoFrame.h"
 
 namespace tanaka {
 
 class WgcVideoSource : public IVideoFrameSource {
  public:
   WgcVideoSource();
-  auto CaptureFrame() -> VideoFrame override;
+  auto CaptureFrame() -> std::optional<VideoFrame> override;
   auto HasMoreFrames() -> bool override;
 
  private:

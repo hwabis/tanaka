@@ -47,19 +47,21 @@ WgcVideoSource::WgcVideoSource() {
   session_.StartCapture();
 }
 
-auto WgcVideoSource::CaptureFrame() -> VideoFrame {
-  auto capturedFrame = framePool_.TryGetNextFrame();
-  if (!capturedFrame) {
-    return {1920, 1080};
+auto WgcVideoSource::CaptureFrame() -> std::optional<VideoFrame> {
+  winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frameToProcess =
+      framePool_.TryGetNextFrame();
+  if (!frameToProcess) {
+    return std::nullopt;
   }
 
-  auto size = capturedFrame.ContentSize();
+  auto size = frameToProcess.ContentSize();
   VideoFrame frame{static_cast<size_t>(size.Width),
                    static_cast<size_t>(size.Height)};
 
-  auto surface = capturedFrame.Surface()
+  auto surface = frameToProcess.Surface()
                      .as<winrt::Windows::Graphics::DirectX::Direct3D11::
                              IDirect3DSurface>();
+
   winrt::com_ptr<ID3D11Texture2D> d3dTexture;
   auto access = surface.as<
       Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
