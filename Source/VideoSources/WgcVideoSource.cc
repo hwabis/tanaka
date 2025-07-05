@@ -19,29 +19,64 @@ WgcVideoSource::WgcVideoSource() {
   captureItem_ =
       itemPtr.as<winrt::Windows::Graphics::Capture::GraphicsCaptureItem>();
 
-  D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0,
-                    D3D11_SDK_VERSION, d3dDevice_.put(), nullptr,
-                    d3dContext_.put());
+  winrt::check_hresult(D3D11CreateDevice(
+      nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, 0,
+      D3D11_SDK_VERSION, d3dDevice_.put(), nullptr, d3dContext_.put()));
   framePool_ =
       winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool::Create(
           createDirect3DDevice(d3dDevice_.get()),
           winrt::Windows::Graphics::DirectX::DirectXPixelFormat::
               B8G8R8A8UIntNormalized,
           2, captureItem_.Size());
+
+  D3D11_TEXTURE2D_DESC stagingDesc{
+      .Width = static_cast<UINT>(captureItem_.Size().Width),
+      .Height = static_cast<UINT>(captureItem_.Size().Height),
+      .MipLevels = 1,
+      .ArraySize = 1,
+      .Format = DXGI_FORMAT_B8G8R8A8_UNORM,
+      .Usage = D3D11_USAGE_STAGING,
+      .BindFlags = 0,
+      .CPUAccessFlags = D3D11_CPU_ACCESS_READ,
+  };
+  stagingDesc.SampleDesc.Count = 1;
+  winrt::check_hresult(d3dDevice_->CreateTexture2D(&stagingDesc, nullptr,
+                                                   stagingTexture_.put()));
+
   session_ = framePool_.CreateCaptureSession(captureItem_);
   session_.StartCapture();
 }
 
 auto WgcVideoSource::CaptureFrame() -> VideoFrame {
-  auto captureFrame = framePool_.TryGetNextFrame();
-  if (!captureFrame) {
+  auto capturedFrame = framePool_.TryGetNextFrame();
+  if (!capturedFrame) {
     return {1920, 1080};
   }
 
-  auto size = captureFrame.ContentSize();
-  // todo
+  auto size = capturedFrame.ContentSize();
+  VideoFrame frame{static_cast<size_t>(size.Width),
+                   static_cast<size_t>(size.Height)};
 
-  return {static_cast<size_t>(size.Width), static_cast<size_t>(size.Height)};
+  auto surface = capturedFrame.Surface()
+                     .as<winrt::Windows::Graphics::DirectX::Direct3D11::
+                             IDirect3DSurface>();
+  winrt::com_ptr<ID3D11Texture2D> d3dTexture;
+  auto access = surface.as<
+      Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
+  winrt::check_hresult(access->GetInterface(winrt::guid_of<ID3D11Texture2D>(),
+                                            d3dTexture.put_void()));
+
+  d3dContext_->CopyResource(stagingTexture_.get(), d3dTexture.get());
+  D3D11_MAPPED_SUBRESOURCE mapped;
+  winrt::check_hresult(
+      d3dContext_->Map(stagingTexture_.get(), 0, D3D11_MAP_READ, 0, &mapped));
+
+  auto pixels = frame.Pixels();
+  std::memcpy(pixels.data(), mapped.pData, pixels.size());
+
+  d3dContext_->Unmap(stagingTexture_.get(), 0);
+
+  return frame;
 }
 
 auto WgcVideoSource::HasMoreFrames() -> bool {

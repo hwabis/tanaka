@@ -32,6 +32,7 @@ class WgcVideoSource : public IVideoFrameSource {
   winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool framePool_ =
       nullptr;
   winrt::Windows::Graphics::Capture::GraphicsCaptureSession session_ = nullptr;
+  winrt::com_ptr<ID3D11Texture2D> stagingTexture_;
 };
 
 }  // namespace tanaka
