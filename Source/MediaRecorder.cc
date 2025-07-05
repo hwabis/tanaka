@@ -11,7 +11,7 @@ auto MediaRecorder::StartRecording() -> bool {
   }
 
   recordingThread_ = std::jthread([this](const std::stop_token& token) {
-    while (!token.stop_requested()) {
+    while (!token.stop_requested() && videoPipeline_.Source().HasMoreFrames()) {
       constexpr int sleepDuration = 33;
       std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
 
