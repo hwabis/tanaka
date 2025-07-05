@@ -1,13 +1,13 @@
 #pragma once
 
 #include <thread>
-#include "Models/VideoPipeline.h"
+#include "Models/MediaSettings.h"
 
 namespace tanaka {
 
 class MediaRecorder {
  public:
-  MediaRecorder(VideoPipeline VideoPipeline);
+  explicit MediaRecorder(MediaSettings mediaSettings);
 
   auto StartRecording() -> bool;
   auto StopRecording() -> void;
@@ -15,9 +15,7 @@ class MediaRecorder {
  private:
   // Goes first so the dtor destroys this before other members
   std::jthread recordingThread_;
-
-  VideoPipeline videoPipeline_;
-  // todo audio
+  MediaSettings settings_;
 };
 
 }  // namespace tanaka
