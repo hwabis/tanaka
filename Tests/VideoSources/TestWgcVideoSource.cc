@@ -8,7 +8,8 @@ TEST(WgcVideoSource, CanCaptureFrame) {
   tanaka::WgcVideoSource source;
 
   // Give WGC time to start capturing, then try to get a frame
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  constexpr int sleepTime = 100;
+  std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
 
   auto frameOpt = source.CaptureFrame();
   ASSERT_TRUE(frameOpt.has_value());

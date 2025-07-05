@@ -10,7 +10,7 @@
 #include <winrt/base.h>
 #include <winrt/windows.graphics.capture.h>
 #include <winrt/windows.graphics.directx.direct3d11.h>
-#include <mutex>
+#include <optional>
 #include "IVideoFrameSource.h"
 #include "VideoFrame.h"
 
@@ -26,9 +26,9 @@ class WgcVideoSource : public IVideoFrameSource {
   static auto createDirect3DDevice(ID3D11Device* d3dDevice)
       -> winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice;
 
+  winrt::com_ptr<ID3D11Device> d3dDevice_ = nullptr;
+  winrt::com_ptr<ID3D11DeviceContext> d3dContext_ = nullptr;
   winrt::Windows::Graphics::Capture::GraphicsCaptureItem captureItem_ = nullptr;
-  winrt::com_ptr<ID3D11Device> d3dDevice_;
-  winrt::com_ptr<ID3D11DeviceContext> d3dContext_;
   winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool framePool_ =
       nullptr;
   winrt::Windows::Graphics::Capture::GraphicsCaptureSession session_ = nullptr;
