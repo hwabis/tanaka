@@ -9,7 +9,7 @@ class MediaRecorder {
  public:
   MediaRecorder(VideoPipeline VideoPipeline);
 
-  auto StartRecording() -> void;
+  auto StartRecording() -> bool;
   auto StopRecording() -> void;
 
  private:
