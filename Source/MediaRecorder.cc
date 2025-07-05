@@ -20,21 +20,22 @@ auto MediaRecorder::StartRecording() -> bool {
       std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
 
       const auto& videoPipeline = settings_.GetVideoPipeline();
+
       if (auto videoFrame = videoPipeline.Source().CaptureFrame()) {
         for (const auto& processor : videoPipeline.Processors()) {
           videoFrame = processor->Process(std::move(*videoFrame));
         }
         if (auto encoded =
                 videoPipeline.Encoder().Encode(std::move(*videoFrame))) {
-          // todo muxer_->AddVideoFrame(*encoded);
+          settings_.GetMuxer().AddVideoFrame(*encoded);
         }
       }
 
       // todo audioFrame
     }
 
-    // todo finalize mux
-    // videoPipeline.Output().Write(muxer_->GetData());
+    auto data = settings_.GetMuxer().Finalize();
+    settings_.GetOutput().Write(data);
   });
 
   return true;
