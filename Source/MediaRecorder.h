@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <thread>
 #include "VideoPipeline.h"
 
 namespace tanaka {
@@ -14,8 +15,10 @@ class MediaRecorder {
   auto StopRecording() -> void;
 
  private:
+  // Goes first so the dtor destroys this before other members
+  std::jthread recordingThread_;
+
   std::unique_ptr<VideoPipeline> videoPipeline_;
-  bool recording_ = false;
 };
 
 }  // namespace tanaka
