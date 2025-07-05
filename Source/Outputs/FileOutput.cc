@@ -3,6 +3,7 @@
 namespace tanaka {
 
 auto FileOutput::Write(std::span<const std::byte> data) -> void {
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
   file_.write(reinterpret_cast<const char*>(data.data()),
               static_cast<std::streamsize>(data.size()));
 }

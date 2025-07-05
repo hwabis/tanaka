@@ -8,6 +8,7 @@ namespace tanaka {
 
 class VideoFrame {
  public:
+  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
   VideoFrame(size_t width, size_t height, int64_t timestampUs)
       : width_(width),
         height_(height),
