@@ -11,12 +11,6 @@ class VideoFrame {
   VideoFrame(size_t width, size_t height)
       : width_(width), height_(height), pixels_(width * height * 4) {}
 
-  ~VideoFrame() = default;
-  VideoFrame(const VideoFrame&) = delete;
-  auto operator=(const VideoFrame&) -> VideoFrame& = delete;
-  VideoFrame(VideoFrame&&) = default;
-  auto operator=(VideoFrame&&) -> VideoFrame& = default;
-
   [[nodiscard]] auto Width() const -> size_t { return width_; }
   [[nodiscard]] auto Height() const -> size_t { return height_; }
   [[nodiscard]] auto Size() const -> size_t { return pixels_.size(); }

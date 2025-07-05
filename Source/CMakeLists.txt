@@ -4,7 +4,6 @@ add_library(tanaka
   VideoProcessors/DoNothingVideoProcessor.cc
   VideoSources/WgcVideoSource.cc
   MediaRecorder.cc
-  VideoPipeline.cc
 )
 
 set_target_defaults(tanaka)

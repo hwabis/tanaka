@@ -11,12 +11,12 @@
 #include <winrt/windows.graphics.capture.h>
 #include <winrt/windows.graphics.directx.direct3d11.h>
 #include <optional>
-#include "IVideoFrameSource.h"
-#include "VideoFrame.h"
+#include "IVideoSource.h"
+#include "Models/VideoFrame.h"
 
 namespace tanaka {
 
-class WgcVideoSource : public IVideoFrameSource {
+class WgcVideoSource : public IVideoSource {
  public:
   WgcVideoSource();
   auto CaptureFrame() -> std::optional<VideoFrame> override;

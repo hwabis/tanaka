@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VideoSources/VideoFrame.h"
+#include "Models/VideoFrame.h"
 
 namespace tanaka {
 

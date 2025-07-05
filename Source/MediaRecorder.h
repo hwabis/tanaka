@@ -1,15 +1,13 @@
 #pragma once
 
-#include <memory>
 #include <thread>
-#include "VideoPipeline.h"
+#include "Models/VideoPipeline.h"
 
 namespace tanaka {
 
-// todo support audio pipeline as well
 class MediaRecorder {
  public:
-  MediaRecorder(std::unique_ptr<VideoPipeline> videoPipeline);
+  MediaRecorder(VideoPipeline VideoPipeline);
 
   auto StartRecording() -> void;
   auto StopRecording() -> void;
@@ -18,7 +16,8 @@ class MediaRecorder {
   // Goes first so the dtor destroys this before other members
   std::jthread recordingThread_;
 
-  std::unique_ptr<VideoPipeline> videoPipeline_;
+  VideoPipeline videoPipeline_;
+  // todo audio
 };
 
 }  // namespace tanaka
