@@ -1,6 +1,5 @@
 #pragma once
 
-// todo "" paths should be consistently from root lol
 #include <fstream>
 #include "IOutput.h"
 
