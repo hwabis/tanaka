@@ -9,8 +9,9 @@ namespace tanaka {
 
 class DoNothingVideoEncoder : public IVideoEncoder {
  public:
-  auto Encode(VideoFrame&& frame) const
+  [[nodiscard]] auto Encode(VideoFrame&& frame) const
       -> std::optional<EncodedVideoFrame> override;
+  [[nodiscard]] auto Codec() const -> VideoCodec override;
 };
 
 }  // namespace tanaka

@@ -6,6 +6,8 @@
 
 namespace tanaka {
 
+enum class VideoCodec : std::uint8_t { Raw, H264, H265, VP9 };
+
 class IVideoEncoder {
  public:
   virtual ~IVideoEncoder() = default;
@@ -14,8 +16,9 @@ class IVideoEncoder {
   IVideoEncoder(IVideoEncoder&&) = default;
   auto operator=(IVideoEncoder&&) -> IVideoEncoder& = default;
 
-  virtual auto Encode(VideoFrame&& frame) const
+  [[nodiscard]] virtual auto Encode(VideoFrame&& frame) const
       -> std::optional<EncodedVideoFrame> = 0;
+  [[nodiscard]] virtual auto Codec() const -> VideoCodec = 0;
 
  protected:
   IVideoEncoder() = default;

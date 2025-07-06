@@ -4,8 +4,10 @@
 #include <optional>
 #include <thread>
 
+namespace tanaka {
+
 TEST(WgcVideoSource, CanCaptureFrame) {
-  tanaka::WgcVideoSource source;
+  WgcVideoSource source;
 
   // Give WGC time to start capturing, then try to get a frame
   constexpr int sleepTime = 100;
@@ -27,3 +29,5 @@ TEST(WgcVideoSource, CanCaptureFrame) {
   EXPECT_GT(frame.Height(), 0);
   EXPECT_TRUE(hasData) << "Frame should contain actual pixel data";
 }
+
+}  // namespace tanaka

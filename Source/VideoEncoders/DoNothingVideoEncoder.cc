@@ -8,4 +8,8 @@ auto DoNothingVideoEncoder::Encode(VideoFrame&& frame) const
   return {{frame.Pixels(), frame.Timestamp()}};
 }
 
+auto DoNothingVideoEncoder::Codec() const -> VideoCodec {
+  return VideoCodec::Raw;
+}
+
 }  // namespace tanaka
