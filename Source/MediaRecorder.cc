@@ -5,6 +5,13 @@ namespace tanaka {
 MediaRecorder::MediaRecorder(MediaSettings mediaSettings)
     : settings_(std::move(mediaSettings)) {}
 
+MediaRecorder::~MediaRecorder() {
+  if (recordingThread_.joinable()) {
+    recordingThread_.request_stop();
+    recordingThread_.join();
+  }
+}
+
 auto MediaRecorder::StartRecording() -> bool {
   if (recordingThread_.joinable()) {
     return false;
@@ -43,6 +50,9 @@ auto MediaRecorder::StartRecording() -> bool {
 
 auto MediaRecorder::StopRecording() -> void {
   recordingThread_.request_stop();
+  if (recordingThread_.joinable()) {
+    recordingThread_.join();
+  }
 }
 
 }  // namespace tanaka

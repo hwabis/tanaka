@@ -9,6 +9,8 @@ class MediaRecorder {
  public:
   explicit MediaRecorder(MediaSettings mediaSettings);
 
+  ~MediaRecorder();
+
   auto StartRecording() -> bool;
   auto StopRecording() -> void;
 
