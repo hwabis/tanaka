@@ -11,6 +11,11 @@ class MediaRecorder {
 
   ~MediaRecorder();
 
+  MediaRecorder(const MediaRecorder&) = delete;
+  auto operator=(const MediaRecorder&) -> MediaRecorder& = delete;
+  MediaRecorder(MediaRecorder&&) = delete;
+  auto operator=(MediaRecorder&&) -> MediaRecorder& = delete;
+
   auto StartRecording() -> bool;
   auto StopRecording() -> void;
 
