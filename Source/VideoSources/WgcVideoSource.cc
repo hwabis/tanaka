@@ -57,8 +57,11 @@ auto WgcVideoSource::CaptureFrame() const -> std::optional<VideoFrame> {
   }
 
   auto size = frameToProcess.ContentSize();
-  VideoFrame frame{static_cast<size_t>(size.Width),
-                   static_cast<size_t>(size.Height), getCurrentTimestampUs()};
+
+  // todo cache this thing
+  VideoFormat format{static_cast<size_t>(size.Width),
+                     static_cast<size_t>(size.Height), PixelFormat::BGRA};
+  VideoFrame frame{format, getCurrentTimestampUs()};
 
   auto surface = frameToProcess.Surface()
                      .as<winrt::Windows::Graphics::DirectX::Direct3D11::

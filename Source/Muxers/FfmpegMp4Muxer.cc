@@ -4,12 +4,10 @@
 
 namespace tanaka {
 
-// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-FfmpegMp4Muxer::FfmpegMp4Muxer(int width,
-                               int height,
+FfmpegMp4Muxer::FfmpegMp4Muxer(const VideoFormat& format,
                                int fps,
                                VideoCodec videoCodec)
-    : width_(width), height_(height), fps_(fps), videoCodec_(videoCodec) {
+    : format_(format), fps_(fps), videoCodec_(videoCodec) {
   initializeFormat();
 }
 
@@ -56,13 +54,9 @@ auto FfmpegMp4Muxer::initializeFormat() -> void {
     default:
       throw std::runtime_error("Unsupported video codec");
   }
-  codecpar->width = width_;
-  codecpar->height = height_;
-
-  constexpr int bytesPerPixel = 4;
-  constexpr int bitsPerByte = 8;
-  codecpar->bit_rate = static_cast<int64_t>(width_) * height_ * bytesPerPixel *
-                       fps_ * bitsPerByte;
+  codecpar->width = static_cast<int>(format_.Width());
+  codecpar->height = static_cast<int>(format_.Height());
+  codecpar->bit_rate = format_.BitRate(fps_);
 
   videoStream_->time_base = {.num = 1, .den = fps_};
 

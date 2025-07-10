@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "MediaRecorder.h"
+#include "Models/VideoFormat.h"
 #include "Muxers/FfmpegMp4Muxer.h"
 #include "Outputs/FileOutput.h"
 #include "VideoEncoders/DoNothingVideoEncoder.h"
@@ -10,8 +11,8 @@ namespace tanaka {
 TEST(MediaRecorder, END_TO_END_LETS_GO) {
   auto source = std::make_unique<WgcVideoSource>();
   auto encoder = std::make_unique<DoNothingVideoEncoder>();
-  auto muxer =
-      std::make_unique<FfmpegMp4Muxer>(1920, 1080, 30, encoder->Codec());
+  VideoFormat format{1920, 1080, PixelFormat::BGRA};
+  auto muxer = std::make_unique<FfmpegMp4Muxer>(format, 30, encoder->Codec());
   auto output = std::make_unique<FileOutput>("test.mp4");
 
   auto recorder = MediaRecorder{{{std::move(source), {}, std::move(encoder)},

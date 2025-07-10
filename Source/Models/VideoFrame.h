@@ -1,33 +1,36 @@
 #pragma once
 
-#include <cstddef>
-#include <span>
-#include <vector>
+#include <cstdint>
+#include "VideoBuffer.h"
+#include "VideoFormat.h"
 
 namespace tanaka {
 
 class VideoFrame {
  public:
-  // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  VideoFrame(size_t width, size_t height, int64_t timestampUs)
-      : width_(width),
-        height_(height),
-        pixels_(width * height * 4),
-        timestampUs_(timestampUs) {}
+  VideoFrame(const VideoFormat& format, int64_t timestampUs)
+      : buffer_(format), timestampUs_(timestampUs) {}
 
-  [[nodiscard]] auto Width() const -> size_t { return width_; }
-  [[nodiscard]] auto Height() const -> size_t { return height_; }
-  [[nodiscard]] auto Size() const -> size_t { return pixels_.size(); }
-  [[nodiscard]] auto Pixels() -> std::span<std::byte> { return pixels_; }
+  VideoFrame(const VideoFormat& format,
+             std::span<const std::byte> data,
+             int64_t timestampUs)
+      : buffer_(format, data), timestampUs_(timestampUs) {}
+
+  [[nodiscard]] auto Width() const -> size_t { return buffer_.Width(); }
+  [[nodiscard]] auto Height() const -> size_t { return buffer_.Height(); }
+  [[nodiscard]] auto Format() const -> const VideoFormat& {
+    return buffer_.Format();
+  }
+  [[nodiscard]] auto Size() const -> size_t { return buffer_.Size(); }
+  [[nodiscard]] auto Pixels() -> std::span<std::byte> { return buffer_.Data(); }
   [[nodiscard]] auto Pixels() const -> std::span<const std::byte> {
-    return pixels_;
+    return buffer_.Data();
   }
   [[nodiscard]] auto Timestamp() const -> int64_t { return timestampUs_; }
+  [[nodiscard]] auto Buffer() const -> const VideoBuffer& { return buffer_; }
 
  private:
-  size_t width_;
-  size_t height_;
-  std::vector<std::byte> pixels_;
+  VideoBuffer buffer_;
   int64_t timestampUs_;
 };
 

@@ -8,13 +8,14 @@ extern "C" {
 
 #include <vector>
 #include "IMuxer.h"
+#include "Models/VideoFormat.h"
 #include "VideoEncoders/IVideoEncoder.h"
 
 namespace tanaka {
 
 class FfmpegMp4Muxer : public IMuxer {
  public:
-  FfmpegMp4Muxer(int width, int height, int fps, VideoCodec videoCodec);
+  FfmpegMp4Muxer(const VideoFormat& format, int fps, VideoCodec videoCodec);
 
   ~FfmpegMp4Muxer() override;
   FfmpegMp4Muxer(const FfmpegMp4Muxer&) = delete;
@@ -37,8 +38,7 @@ class FfmpegMp4Muxer : public IMuxer {
   AVIOContext* ioContext_ = nullptr;
 
   std::vector<std::byte> outputBuffer_;
-  int width_;
-  int height_;
+  VideoFormat format_;
   int fps_;
   VideoCodec videoCodec_;
   int64_t frameCount_ = 0;
