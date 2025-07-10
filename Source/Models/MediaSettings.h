@@ -15,7 +15,7 @@ class MediaSettings {
         muxer_(std::move(muxer)),
         output_(std::move(output)) {}
 
-  [[nodiscard]] auto GetVideoPipeline() const -> const VideoPipeline& {
+  [[nodiscard]] auto GetVideoPipeline() -> VideoPipeline& {
     return videoPipeline_;
   }
   [[nodiscard]] auto GetMuxer() -> IMuxer& { return *muxer_; }

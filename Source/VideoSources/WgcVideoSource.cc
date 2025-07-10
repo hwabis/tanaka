@@ -44,12 +44,26 @@ WgcVideoSource::WgcVideoSource() {
                                                    stagingTexture_.put()));
 
   session_ = framePool_.CreateCaptureSession(captureItem_);
-  session_.StartCapture();
-
   captureStartTime_ = std::chrono::steady_clock::now();
 }
 
-auto WgcVideoSource::CaptureFrame() const -> std::optional<VideoFrame> {
+auto WgcVideoSource::StartRecording() -> bool {
+  if (!session_) {
+    return false;
+  }
+
+  session_.StartCapture();
+  return true;
+}
+
+auto WgcVideoSource::StopRecording() -> void {
+  if (session_) {
+    session_ = nullptr;
+  }
+}
+
+auto WgcVideoSource::CaptureFrame() -> std::optional<VideoFrame> {
+  // todo try using the windows callback thing so we dont miss any frames
   winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frameToProcess =
       framePool_.TryGetNextFrame();
   if (!frameToProcess) {

@@ -9,6 +9,8 @@ namespace tanaka {
 TEST(WgcVideoSource, CanCaptureFrame) {
   WgcVideoSource source;
 
+  ASSERT_TRUE(source.StartRecording());
+
   // Give WGC time to start capturing, then try to get a frame
   constexpr int sleepTime = 100;
   std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));

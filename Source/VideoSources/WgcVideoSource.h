@@ -21,13 +21,16 @@ class WgcVideoSource : public IVideoSource {
  public:
   WgcVideoSource();
 
-  [[nodiscard]] auto CaptureFrame() const -> std::optional<VideoFrame> override;
+  auto StartRecording() -> bool override;
+  auto StopRecording() -> void override;
+
+  [[nodiscard]] auto CaptureFrame() -> std::optional<VideoFrame> override;
   [[nodiscard]] auto HasMoreFrames() const -> bool override;
 
  private:
   static auto createDirect3DDevice(ID3D11Device* d3dDevice)
       -> winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice;
-  auto getCurrentTimestampUs() const -> int64_t;
+  [[nodiscard]] auto getCurrentTimestampUs() const -> int64_t;
 
   std::chrono::steady_clock::time_point captureStartTime_;
 

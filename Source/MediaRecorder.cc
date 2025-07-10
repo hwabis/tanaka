@@ -17,6 +17,10 @@ auto MediaRecorder::StartRecording() -> bool {
     return false;
   }
 
+  if (!settings_.GetVideoPipeline().Source().StartRecording()) {
+    return false;
+  }
+
   // todo streaming and stuff isn't possible like this since we have to wait for
   // stop token or source to run out of frames before any output happens LOL
   recordingThread_ = std::jthread([this](const std::stop_token& token) {
@@ -26,7 +30,7 @@ auto MediaRecorder::StartRecording() -> bool {
       constexpr int sleepDuration = 33;
       std::this_thread::sleep_for(std::chrono::milliseconds(sleepDuration));
 
-      const auto& videoPipeline = settings_.GetVideoPipeline();
+      auto& videoPipeline = settings_.GetVideoPipeline();
 
       if (auto videoFrame = videoPipeline.Source().CaptureFrame()) {
         for (const auto& processor : videoPipeline.Processors()) {
@@ -53,6 +57,8 @@ auto MediaRecorder::StopRecording() -> void {
   if (recordingThread_.joinable()) {
     recordingThread_.join();
   }
+
+  settings_.GetVideoPipeline().Source().StopRecording();
 }
 
 }  // namespace tanaka

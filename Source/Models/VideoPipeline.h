@@ -17,7 +17,7 @@ class VideoPipeline {
         processors_(std::move(processors)),
         encoder_(std::move(encoder)) {}
 
-  [[nodiscard]] auto Source() const -> const IVideoSource& { return *source_; }
+  [[nodiscard]] auto Source() -> IVideoSource& { return *source_; }
   [[nodiscard]] auto Processors() const
       -> const std::vector<std::unique_ptr<IVideoProcessor>>& {
     return processors_;
