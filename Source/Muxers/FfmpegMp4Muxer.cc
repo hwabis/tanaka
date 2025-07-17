@@ -38,7 +38,9 @@ auto FfmpegMp4Muxer::initializeFormat() -> void {
     case VideoCodec::Raw:
       codecpar->codec_id = AV_CODEC_ID_RAWVIDEO;
       codecpar->format = AV_PIX_FMT_BGRA;
+      // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       codecpar->bits_per_coded_sample = 32;
+      // NOLINTNEXTLINE(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
       codecpar->bits_per_raw_sample = 8;
       codecpar->codec_tag = 0;
       break;
@@ -149,7 +151,6 @@ auto FfmpegMp4Muxer::Finalize() -> std::vector<std::byte> {
 
   writeTrailer();
 
-  // Flush any remaining data
   if (ioContext_ != nullptr) {
     avio_flush(ioContext_);
   }
