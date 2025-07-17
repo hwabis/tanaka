@@ -22,7 +22,7 @@ FfmpegMp4Muxer::~FfmpegMp4Muxer() {
 }
 
 auto FfmpegMp4Muxer::initializeFormat() -> void {
-  if (avformat_alloc_output_context2(&formatContext_, nullptr, "nut", nullptr) <
+  if (avformat_alloc_output_context2(&formatContext_, nullptr, "avi", nullptr) <
       0) {
     throw std::runtime_error("Failed to allocate output format context");
   }
@@ -38,6 +38,9 @@ auto FfmpegMp4Muxer::initializeFormat() -> void {
     case VideoCodec::Raw:
       codecpar->codec_id = AV_CODEC_ID_RAWVIDEO;
       codecpar->format = AV_PIX_FMT_BGRA;
+      codecpar->bits_per_coded_sample = 32;
+      codecpar->bits_per_raw_sample = 8;
+      codecpar->codec_tag = 0;
       break;
     case VideoCodec::H264:
       codecpar->codec_id = AV_CODEC_ID_H264;
@@ -56,11 +59,11 @@ auto FfmpegMp4Muxer::initializeFormat() -> void {
   }
   codecpar->width = static_cast<int>(format_.Width());
   codecpar->height = static_cast<int>(format_.Height());
-  codecpar->bit_rate = format_.BitRate(fps_);
 
   videoStream_->time_base = {.num = 1, .den = fps_};
+  videoStream_->r_frame_rate = {.num = fps_, .den = 1};
 
-  constexpr size_t bufferSize = 4096;
+  constexpr size_t bufferSize = 65536;
   auto* buffer = static_cast<uint8_t*>(av_malloc(bufferSize));
   if (buffer == nullptr) {
     throw std::runtime_error("Failed to allocate IO buffer");
@@ -104,20 +107,14 @@ auto FfmpegMp4Muxer::AddVideoFrame(const EncodedVideoFrame& frame) -> void {
   }
 
   auto frameData = frame.Data();
+  packet->data =
+      const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(frameData.data()));
   packet->size = static_cast<int>(frameData.size());
-  packet->data = static_cast<uint8_t*>(av_malloc(packet->size));
-  if (packet->data == nullptr) {
-    av_packet_free(&packet);
-    throw std::runtime_error("Failed to allocate packet data");
-  }
-  std::memcpy(packet->data, frameData.data(), packet->size);
-  packet->buf = av_buffer_create(packet->data, packet->size,
-                                 av_buffer_default_free, nullptr, 0);
+  packet->buf = nullptr;
 
-  constexpr int64_t usPerSec = 1000000;
-  packet->pts =
-      av_rescale_q(frame.Timestamp(), {1, usPerSec}, videoStream_->time_base);
-  packet->dts = packet->pts;
+  packet->pts = frameCount_;
+  packet->dts = frameCount_;
+  packet->stream_index = 0;
   // NOLINTNEXTLINE(hicpp-signed-bitwise)
   packet->flags |= AV_PKT_FLAG_KEY;
 

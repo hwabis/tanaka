@@ -13,7 +13,7 @@ TEST(MediaRecorder, END_TO_END_LETS_GO) {
   auto encoder = std::make_unique<DoNothingVideoEncoder>();
   VideoFormat format{1920, 1080, PixelFormat::BGRA};
   auto muxer = std::make_unique<FfmpegMp4Muxer>(format, 30, encoder->Codec());
-  auto output = std::make_unique<FileOutput>("test.mp4");
+  auto output = std::make_unique<FileOutput>("test.avi");
 
   auto recorder = MediaRecorder{{{std::move(source), {}, std::move(encoder)},
                                  std::move(muxer),
