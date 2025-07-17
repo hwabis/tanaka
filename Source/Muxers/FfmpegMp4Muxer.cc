@@ -108,6 +108,10 @@ auto FfmpegMp4Muxer::AddVideoFrame(const EncodedVideoFrame& frame) -> void {
   auto frameData = frame.Data();
   packet->size = static_cast<int>(frameData.size());
   packet->data = static_cast<uint8_t*>(av_malloc(packet->size));
+  if (packet->data == nullptr) {
+    av_packet_free(&packet);
+    throw std::runtime_error("Failed to allocate packet data");
+  }
   std::memcpy(packet->data, frameData.data(), packet->size);
   packet->buf = av_buffer_create(packet->data, packet->size,
                                  av_buffer_default_free, nullptr, 0);
