@@ -61,7 +61,6 @@ auto FfmpegMp4Muxer::initializeFormat() -> void {
   codecpar->height = static_cast<int>(format_.Height());
 
   videoStream_->time_base = {.num = 1, .den = fps_};
-  videoStream_->r_frame_rate = {.num = fps_, .den = 1};
 
   constexpr size_t bufferSize = 65536;
   auto* buffer = static_cast<uint8_t*>(av_malloc(bufferSize));
@@ -107,14 +106,16 @@ auto FfmpegMp4Muxer::AddVideoFrame(const EncodedVideoFrame& frame) -> void {
   }
 
   auto frameData = frame.Data();
-  packet->data =
-      const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(frameData.data()));
   packet->size = static_cast<int>(frameData.size());
-  packet->buf = nullptr;
+  packet->data = static_cast<uint8_t*>(av_malloc(packet->size));
+  std::memcpy(packet->data, frameData.data(), packet->size);
+  packet->buf = av_buffer_create(packet->data, packet->size,
+                                 av_buffer_default_free, nullptr, 0);
 
-  packet->pts = frameCount_;
-  packet->dts = frameCount_;
-  packet->stream_index = 0;
+  constexpr int64_t usPerSec = 1000000;
+  packet->pts =
+      av_rescale_q(frame.Timestamp(), {1, usPerSec}, videoStream_->time_base);
+  packet->dts = packet->pts;
   // NOLINTNEXTLINE(hicpp-signed-bitwise)
   packet->flags |= AV_PKT_FLAG_KEY;
 
